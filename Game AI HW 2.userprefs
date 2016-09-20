@@ -1,12 +1,13 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\PathFollow.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\FollowPathAndAvoidObstacles.cs">
     <Files>
-      <File FileName="Assets\PathFollow.cs" Line="63" Column="37" />
+      <File FileName="Assets\PathFollow.cs" Line="1" Column="1" />
       <File FileName="Assets\Node.cs" Line="1" Column="1" />
-      <File FileName="Assets\SpawnExample.cs" Line="16" Column="1" />
-      <File FileName="Assets\ConeCheckAvoidAll.cs" Line="41" Column="18" />
-      <File FileName="Assets\ConeCheckAvoidClosest.cs" Line="5" Column="11" />
+      <File FileName="Assets\SpawnExample.cs" Line="1" Column="1" />
+      <File FileName="Assets\ConeCheckAvoidAll.cs" Line="1" Column="1" />
+      <File FileName="Assets\ConeCheckAvoidClosest.cs" Line="1" Column="1" />
+      <File FileName="Assets\FollowPathAndAvoidObstacles.cs" Line="54" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

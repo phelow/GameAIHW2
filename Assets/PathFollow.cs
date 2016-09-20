@@ -6,8 +6,8 @@ public class PathFollow : MonoBehaviour {
 	[SerializeField]private float m_maxAcceleration;
 	[SerializeField]private float m_maxSpeed = 3.0f;
 	[SerializeField]protected Rigidbody m_rigidBody;
-	[SerializeField]private float m_maxAccelerationMagnitude;
-	[SerializeField]private float m_minDistance;
+	[SerializeField]protected float m_maxAccelerationMagnitude;
+	[SerializeField]protected float m_minDistance;
 	[SerializeField]protected float m_maxAngularAcceleration;
 
 	protected Vector3 m_pathFollowTorque;
@@ -65,7 +65,7 @@ public class PathFollow : MonoBehaviour {
 		}
 	}
 
-	public void Pursue(GameObject target){
+	public virtual void Pursue(GameObject target){
 		/*	Dynamic Seek:
 			1. Linear Acceleration = target.position - character.position
 			2. Clip to max acceleration
@@ -78,20 +78,6 @@ public class PathFollow : MonoBehaviour {
 		Vector3 direction = (target.transform.position - this.transform.position).normalized;
 
 		Vector3 headingDistance = Vector3.Cross (transform.up, direction);
-		/*
-		Vector3 Torque = new Vector3(0,0,0);
-
-		Vector3 InversePoint = transform.InverseTransformPoint (futurePosition);
-
-		if (InversePoint.x < 0.0) {
-			Torque = Vector3.left;
-		} else {
-			Torque = Vector3.right;
-		}
-
-		Torque = Torque * m_maxAcceleration;
-
-		*/
 		Vector3 Torque = Vector3.Cross (transform.up, direction);
 
 		Torque = Torque.normalized * m_maxAngularAcceleration;
@@ -109,12 +95,6 @@ public class PathFollow : MonoBehaviour {
 
 		m_pathFollowTorque = Torque;
 		m_pathFollowForce = Vector3.ClampMagnitude (transform.up * m_maxAccelerationMagnitude, Mathf.Abs (m_maxAccelerationMagnitude));
-
-
-
-		//m_rigidBody.AddTorque(Torque);
-
-		//m_rigidBody.AddForce (Vector3.ClampMagnitude (transform.up * m_maxAccelerationMagnitude, Mathf.Abs (m_maxAccelerationMagnitude)));
 
 	}
 }

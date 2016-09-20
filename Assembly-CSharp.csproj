@@ -46,8 +46,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\CameraMovement.cs" />
+     <Compile Include="Assets\CollisionPrediction.cs" />
      <Compile Include="Assets\ConeCheckAvoidAll.cs" />
      <Compile Include="Assets\ConeCheckAvoidClosest.cs" />
+     <Compile Include="Assets\FollowPathAndAvoidObstacles.cs" />
      <Compile Include="Assets\Node.cs" />
      <Compile Include="Assets\PathFollow.cs" />
      <Compile Include="Assets\SpawnExample.cs" />
