@@ -16,6 +16,8 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 
 	[SerializeField]private GameObject m_left;
 	[SerializeField]private GameObject m_right;
+	[SerializeField]private float m_startingDistance;
+	[SerializeField]private BoxCollider m_boxCollider;
 	private Vector3 m_avoidanceTorque;
 	private List<Vector3> m_drawList;
 
@@ -29,8 +31,9 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 		while (nextNode != null) {
 
 			m_avoidanceTorque = new Vector3 (0,0,0);
-
-			this.Avoid (RayCast(m_left.transform),RayCast(this.transform),RayCast(m_right.transform));
+			if (TargetObscured (nextNode.transform.position)) {
+				this.Avoid (RayCast (m_left.transform), RayCast (this.transform), RayCast (m_right.transform));
+			}
 			float t = 0;
 			while (t < m_sampleTime) {
 				t += Time.deltaTime;
@@ -47,18 +50,29 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 	private bool Avoid(Vector3? left,Vector3? hit, Vector3? right){
 
 
-		//if left is longer than right, turn left
-		if ((left.HasValue == false && right.HasValue == true) || (left.HasValue == true && right.HasValue == true && Vector3.Distance (transform.position, (Vector3)left) > Vector3.Distance (transform.position, (Vector3)right))) {
-			m_avoidanceTorque = (Vector3.Cross(m_left.transform.position ,transform.up)).normalized * m_maxAngularAcceleration;
+		if (right.HasValue == false && left.HasValue == false) {
 			return false;
 		}
 
 		//if right is longer than left, turn right
-		if ((right.HasValue == false && left.HasValue == true) || (left.HasValue == true && right.HasValue == true && Vector3.Distance (transform.position, (Vector3)left) < Vector3.Distance (transform.position, (Vector3)right))) {
-			m_avoidanceTorque = (Vector3.Cross(m_right.transform.position ,transform.up)).normalized * m_maxAngularAcceleration;
+		if ((right.HasValue == false) || (left.HasValue == true && right.HasValue == true && Vector3.Distance (transform.position, (Vector3)left) < Vector3.Distance (transform.position, (Vector3)right))) {
+			m_avoidanceTorque = (Vector3.Cross(transform.right ,transform.up)).normalized * -1 * m_maxAngularAcceleration;
+			Debug.Log ("Turning Right");
 			return false;
 		}
 
+		//if left is longer than right, turn left
+		if ((left.HasValue == false) || (left.HasValue == true && right.HasValue == true && Vector3.Distance (transform.position, (Vector3)left) > Vector3.Distance (transform.position, (Vector3)right))) {
+			m_avoidanceTorque = (Vector3.Cross(transform.right ,transform.up)).normalized * m_maxAngularAcceleration;
+			Debug.Log ("Turning left");
+			return false;
+		}
+
+
+		if (hit.HasValue) {
+			m_avoidanceTorque = Vector3.Cross((((Vector3) hit) - transform.position) * -1.0f, transform.up).normalized * m_maxAngularVelocity;
+			return false;
+		}
 		//		Torque = Vector3.Cross(transform.up,Vector3.left) * m_maxAngularAcceleration;
 		//		Torque = Vector3.Cross(transform.up,Vector3.right) * m_maxAngularAcceleration;
 
@@ -72,16 +86,39 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 		Debug.DrawRay (transform.position, m_avoidanceTorque, Color.blue);
 	}
 
-	private Vector3? RayCast(Transform startingpoint){
+	private bool TargetObscured(Vector3 endingPoint){
+		if(RayCast (m_left.transform,true).HasValue || RayCast (this.transform,true).HasValue || RayCast (m_right.transform,true).HasValue){
+			return true;
+		}
+		Vector3 position = transform.position;
+
+
+		Vector3 direction = (endingPoint - position).normalized;
+		position += direction* m_startingDistance;
+
+		m_lineRenderer.SetPosition (0, position);
+		while (Vector3.Distance (position, endingPoint) > .3f) {
+			m_lineRenderer.SetPosition (1, position);
+			position += direction * m_raycastStep;
+			if (Physics.CheckSphere (position, m_raycastRadius * m_boxCollider.bounds.size.x * 1.8f)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private Vector3? RayCast(Transform startingpoint, bool s = false){
 		Vector3 position = startingpoint.position;
-		position += transform.up *1.0f;
+		position += transform.up * m_startingDistance;
 		Debug.Log ("RAycasting");
 		m_drawList = new List<Vector3> ();
 		m_lineRenderer = startingpoint.GetComponent<LineRenderer> ();
 
 		m_lineRenderer.SetPosition (0, position);
 
-		for (float i = 0.0f; i < m_raycastDistance; i += m_raycastStep) {
+
+		for (float i = 0.0f; i < (s == false ?  m_raycastDistance : m_raycastDistance/10.0f); i += m_raycastStep) {
 			position += startingpoint.up * m_raycastStep;
 			m_drawList.Add (position);
 			m_lineRenderer.SetPosition (1, position);
