@@ -49,8 +49,8 @@ public class PathFollow : MonoBehaviour {
 	
 	protected virtual IEnumerator MasterMove(){
 		while (true) {
-			m_rigidBody.AddForce (m_pathFollowForce);
-			m_rigidBody.AddTorque (m_pathFollowTorque);
+			m_rigidBody.AddForce (m_pathFollowForce* Time.deltaTime * 100.0f);
+			m_rigidBody.AddTorque (m_pathFollowTorque* Time.deltaTime * 100.0f);
 
 			CheckSpeed ();
 
@@ -59,21 +59,12 @@ public class PathFollow : MonoBehaviour {
 	}
 
 	protected void CheckSpeed(){
-
 		if (m_rigidBody.velocity.magnitude > m_maxSpeed) {
 			m_rigidBody.velocity = m_rigidBody.velocity.normalized * m_maxSpeed;
 		}
 	}
 
 	public virtual void Pursue(GameObject target){
-		/*	Dynamic Seek:
-			1. Linear Acceleration = target.position - character.position
-			2. Clip to max acceleration
-			3. Clip to max speed
-			4. Add angular velocity*/
-		
-		//2. Clip to max acceleration
-
 		//calcualte rotation
 		Vector3 direction = (target.transform.position - this.transform.position).normalized;
 
@@ -88,10 +79,6 @@ public class PathFollow : MonoBehaviour {
 		Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude - m_rigidBody.angularVelocity.magnitude);
 
 		Debug.DrawRay (transform.position, direction);
-
-
-
-
 
 		m_pathFollowTorque = Torque;
 		m_pathFollowForce = Vector3.ClampMagnitude (transform.up * m_maxAccelerationMagnitude, Mathf.Abs (m_maxAccelerationMagnitude));

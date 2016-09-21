@@ -20,6 +20,7 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 	[SerializeField]private BoxCollider m_boxCollider;
 	private Vector3 m_avoidanceTorque;
 	private List<Vector3> m_drawList;
+	Vector3 Torque;
 
 	// Use this for initialization
 	void Start () {
@@ -34,6 +35,7 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 			if (TargetObscured (nextNode.transform.position)) {
 				this.Avoid (RayCast (m_left.transform), RayCast (this.transform), RayCast (m_right.transform));
 			}
+
 			float t = 0;
 			while (t < m_sampleTime) {
 				t += Time.deltaTime;
@@ -46,10 +48,8 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 			yield return new WaitForEndOfFrame ();
 		}
 	}
-	Vector3 Torque;
+
 	private bool Avoid(Vector3? left,Vector3? hit, Vector3? right){
-
-
 		if (right.HasValue == false && left.HasValue == false) {
 			return false;
 		}
@@ -57,14 +57,12 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 		//if right is longer than left, turn right
 		if ((right.HasValue == false) || (left.HasValue == true && right.HasValue == true && Vector3.Distance (transform.position, (Vector3)left) < Vector3.Distance (transform.position, (Vector3)right))) {
 			m_avoidanceTorque = (Vector3.Cross(transform.right ,transform.up)).normalized * -1 * m_maxAngularAcceleration;
-			Debug.Log ("Turning Right");
 			return false;
 		}
 
 		//if left is longer than right, turn left
 		if ((left.HasValue == false) || (left.HasValue == true && right.HasValue == true && Vector3.Distance (transform.position, (Vector3)left) > Vector3.Distance (transform.position, (Vector3)right))) {
 			m_avoidanceTorque = (Vector3.Cross(transform.right ,transform.up)).normalized * m_maxAngularAcceleration;
-			Debug.Log ("Turning left");
 			return false;
 		}
 
@@ -73,15 +71,10 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 			m_avoidanceTorque = Vector3.Cross((((Vector3) hit) - transform.position) * -1.0f, transform.up).normalized * m_maxAngularVelocity;
 			return false;
 		}
-		//		Torque = Vector3.Cross(transform.up,Vector3.left) * m_maxAngularAcceleration;
-		//		Torque = Vector3.Cross(transform.up,Vector3.right) * m_maxAngularAcceleration;
-
-		//		m_avoidanceTorque = Torque;
 		return true;
 	}
 
 	public void Update(){
-		
 		Debug.DrawRay (transform.position, m_pathFollowTorque, Color.green);
 		Debug.DrawRay (transform.position, m_avoidanceTorque, Color.blue);
 	}
@@ -90,9 +83,9 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 		if(RayCast (m_left.transform,true).HasValue || RayCast (this.transform,true).HasValue || RayCast (m_right.transform,true).HasValue){
 			return true;
 		}
+
+
 		Vector3 position = transform.position;
-
-
 		Vector3 direction = (endingPoint - position).normalized;
 		position += direction* m_startingDistance;
 
@@ -108,17 +101,16 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 		return false;
 	}
 
-	private Vector3? RayCast(Transform startingpoint, bool s = false){
+	private Vector3? RayCast(Transform startingpoint, bool shortCheck = false){
 		Vector3 position = startingpoint.position;
 		position += transform.up * m_startingDistance;
-		Debug.Log ("RAycasting");
 		m_drawList = new List<Vector3> ();
 		m_lineRenderer = startingpoint.GetComponent<LineRenderer> ();
 
 		m_lineRenderer.SetPosition (0, position);
 
 
-		for (float i = 0.0f; i < (s == false ?  m_raycastDistance : m_raycastDistance/10.0f); i += m_raycastStep) {
+		for (float i = 0.0f; i < (shortCheck == false ?  m_raycastDistance : m_raycastDistance/10.0f); i += m_raycastStep) {
 			position += startingpoint.up * m_raycastStep;
 			m_drawList.Add (position);
 			m_lineRenderer.SetPosition (1, position);
@@ -126,11 +118,7 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 			if (Physics.CheckSphere (position, m_raycastRadius)) {
 				return position;
 			}
-
 		}
-
-		Debug.Log ("Nothing found");
-
 		return null;
 
 	}
@@ -154,14 +142,6 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 	}
 
 	public override void Pursue(GameObject target){
-		/*	Dynamic Seek:
-			1. Linear Acceleration = target.position - character.position
-			2. Clip to max acceleration
-			3. Clip to max speed
-			4. Add angular velocity*/
-
-		//2. Clip to max acceleration
-
 		//calcualte rotation
 		Vector3 direction = (target.transform.position - this.transform.position).normalized;
 
@@ -174,10 +154,6 @@ public class FollowPathAndAvoidObstacles : PathFollow {
 		//Scale down the torque to prevent overshooting of the target
 
 		Torque = Torque * .1f;
-
-
-
-
 
 		m_pathFollowTorque = Torque;
 		m_pathFollowForce = Vector3.ClampMagnitude (transform.up * m_maxAccelerationMagnitude, Mathf.Abs (m_maxAccelerationMagnitude));

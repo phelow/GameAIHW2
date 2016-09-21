@@ -4,7 +4,6 @@ using System.Collections;
 public class ConeCheckAvoidClosest : ConeCheckAvoidAll {
 	protected override IEnumerator AvoidOthers(){
 		while (true) {
-			Debug.Log ("Running closest cone check");
 			yield return new WaitForEndOfFrame ();
 
 			Vector3 avoidancePosition = Vector3.zero;
@@ -29,7 +28,7 @@ public class ConeCheckAvoidClosest : ConeCheckAvoidAll {
 				continue;
 			}
 
-			avoidancePosition = avoidancePosition * 1 / evading;
+			avoidancePosition = avoidancePosition * 1 / evading * Time.deltaTime * 100.0f;
 
 			com = avoidancePosition;
 
@@ -48,7 +47,7 @@ public class ConeCheckAvoidClosest : ConeCheckAvoidAll {
 
 			//Scale down the torque to prevent overshooting of the target
 
-			Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude - m_rigidBody.angularVelocity.magnitude);
+			Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude - m_rigidBody.angularVelocity.magnitude) * Time.deltaTime * 100.0f;
 			Debug.DrawRay (transform.position, Torque, Color.red);
 			m_avoidOthersTorque = Torque;
 		}

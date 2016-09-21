@@ -29,22 +29,18 @@ public class ConeCheckAvoidAll : PathFollow {
 			Vector3 Torque = new Vector3(0,0,0);
 
 			if (m_avoidOthersTorque.magnitude > .1f) {
-				Torque = m_pathFollowTorque * m_followPathRatio + m_avoidOthersTorque * m_avoidOthersRatio;
+				Torque = m_pathFollowTorque * m_followPathRatio + m_avoidOthersTorque * m_avoidOthersRatio * Time.deltaTime * 100.0f;
 			} else {
-				Torque = m_pathFollowTorque;
+				Torque = m_pathFollowTorque * Time.deltaTime * 100.0f;
 			}
 
 			if (Torque.magnitude > m_maxAngularAcceleration) {
-				Torque = Torque.normalized * m_maxAngularAcceleration;
+				Torque = Torque.normalized * m_maxAngularAcceleration * Time.deltaTime * 100.0f;
 			}
 			m_rigidBody.AddTorque (Torque);
 			CheckSpeed ();
 			yield return new WaitForEndOfFrame ();
 		}
-	}
-
-	void OnDrawGizmos(){
-		Gizmos.DrawSphere (com, .1f);
 	}
 
 	protected virtual IEnumerator AvoidOthers(){
@@ -53,6 +49,7 @@ public class ConeCheckAvoidAll : PathFollow {
 
 			Vector3 centerOfMass = Vector3.zero;
 			int evading = 0;
+
 			foreach (GameObject go in m_tracking) {
 				//if there are characters within the cone do the steering
 				if (Vector3.Dot (transform.up, go.transform.position - transform.position) < m_coneThreshold) {
@@ -60,19 +57,13 @@ public class ConeCheckAvoidAll : PathFollow {
 					evading++;
 				}
 			}
-
-
+				
 			if (evading == 0) {
 				m_avoidOthersTorque = new Vector3 (0, 0, 0);
 				continue;
 			}
 
 			centerOfMass = centerOfMass * 1 / evading;
-
-			com = centerOfMass;
-
-			//else return with no steering
-
 
 			//add rotation away from the center of mass
 
@@ -84,10 +75,7 @@ public class ConeCheckAvoidAll : PathFollow {
 			Torque = Torque.normalized * m_maxAngularAcceleration;
 
 			//Scale down the torque to prevent overshooting of the target
-
 			Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude - m_rigidBody.angularVelocity.magnitude);
-
-			Debug.DrawRay (transform.position,Torque,Color.red);
 
 			m_avoidOthersTorque = Torque;
 		}
