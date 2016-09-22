@@ -75,7 +75,7 @@ public class ConeCheckAvoidAll : PathFollow {
 			Torque = Torque.normalized * m_maxAngularAcceleration;
 
 			//Scale down the torque to prevent overshooting of the target
-			Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude - m_rigidBody.angularVelocity.magnitude);
+			Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude);
 
 			m_avoidOthersTorque = Torque;
 		}

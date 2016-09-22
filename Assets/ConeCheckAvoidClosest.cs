@@ -47,7 +47,7 @@ public class ConeCheckAvoidClosest : ConeCheckAvoidAll {
 
 			//Scale down the torque to prevent overshooting of the target
 
-			Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude - m_rigidBody.angularVelocity.magnitude) * Time.deltaTime * 100.0f;
+			Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude) * Time.deltaTime * 100.0f;
 			Debug.DrawRay (transform.position, Torque, Color.red);
 			m_avoidOthersTorque = Torque;
 		}
