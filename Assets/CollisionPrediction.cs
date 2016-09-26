@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class CollisionPrediction : ConeCheckAvoidAll {
-	[SerializeField]private float m_collisionTolerance = 2.0f;
+	[SerializeField]protected float m_collisionTolerance = 2.0f;
 
 	private Vector3 WhereTheseHit(GameObject a,GameObject b){
 
@@ -46,6 +46,10 @@ public class CollisionPrediction : ConeCheckAvoidAll {
 				float thisDistance = Vector3.Distance (go.transform.position, this.transform.position);
 
 				Vector3 collisionPoint = WhereTheseHit (this.gameObject, go);
+
+				if (collisionPoint == null) {
+					continue;
+				}
 
 				//if there are characters within the cone do the steering
 				if (Vector3.Distance(collisionPoint,this.transform.position) < closestDistance) {
