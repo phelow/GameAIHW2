@@ -29,7 +29,7 @@ public class ConeCheckAvoidAll : PathFollow {
 			Vector3 Torque = new Vector3(0,0,0);
 
 			if (m_avoidOthersTorque.magnitude > .1f) {
-				Torque = m_pathFollowTorque * m_followPathRatio + m_avoidOthersTorque * m_avoidOthersRatio * Time.deltaTime * 100.0f;
+				Torque = m_pathFollowTorque * m_followPathRatio* Time.deltaTime * 100.0f + m_avoidOthersTorque * m_avoidOthersRatio * Time.deltaTime * 100.0f;
 			} else {
 				Torque = m_pathFollowTorque * Time.deltaTime * 100.0f;
 			}

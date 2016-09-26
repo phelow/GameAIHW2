@@ -76,11 +76,11 @@ public class PathFollow : MonoBehaviour {
 
 		//Scale down the torque to prevent overshooting of the target
 
-		Torque = Torque * Mathf.Lerp (0.0f, 1.0f, headingDistance.magnitude - m_rigidBody.angularVelocity.magnitude);
+		Torque = Torque * Mathf.Lerp (0.7f, 1.0f, headingDistance.magnitude - m_rigidBody.angularVelocity.magnitude);
 
 		Debug.DrawRay (transform.position, direction);
 
-		m_pathFollowTorque = Torque;
+		m_pathFollowTorque = Torque * Time.deltaTime * 100.0f;
 		m_pathFollowForce = Vector3.ClampMagnitude (transform.up * m_maxAccelerationMagnitude, Mathf.Abs (m_maxAccelerationMagnitude));
 
 	}
