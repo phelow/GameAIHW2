@@ -24,7 +24,7 @@ public class CollisionPrediction : ConeCheckAvoidAll {
 			if (distance < closestDistance) {
 				closestDistance = distance;
 
-				closestPoint = posA;
+				closestPoint = posB;
 			}
 
 		}
@@ -65,20 +65,10 @@ public class CollisionPrediction : ConeCheckAvoidAll {
 				continue;
 			}
 
-			Debug.DrawRay (Vector3.zero, avoidancePosition,Color.blue);
-
-			avoidancePosition = avoidancePosition * 1 / evading * Time.deltaTime * 100.0f;
-
-			com = avoidancePosition;
-
-			//else return with no steering
-
 
 			//add rotation away from the center of mass
 
 			Vector3 direction = (avoidancePosition  - this.transform.position).normalized * -1;
-
-			Vector3 headingDistance = Vector3.Cross (transform.up, direction);
 
 			Vector3 Torque = Vector3.Cross (transform.up, direction);
 
